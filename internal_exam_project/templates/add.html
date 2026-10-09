@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Student</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/theme.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+        }
+        .form-card {
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+            position: relative;
+        }
+        .section-title {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--card-border);
+            padding-bottom: 10px;
+            margin-top: 25px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container d-flex justify-content-center">
+        <div class="form-card glass-container">
+            <button id="theme-toggle" class="theme-toggle-btn position-absolute top-0 end-0 m-4">
+                <i id="theme-icon" class="fas fa-moon"></i>
+            </button>
+            <h3 class="text-center mb-4"><i class="fas fa-user-plus text-primary"></i> Add New Student</h3>
+            
+            <form method="POST">
+                
+                <div class="section-title"><i class="fas fa-id-badge text-primary me-2"></i> Basic Details</div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Register Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                            <input type="text" name="id" class="form-control" placeholder="e.g. CS1001" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Full Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="text" name="name" class="form-control" placeholder="Student's name" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-bold">Date of Birth</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-calendar-alt text-info"></i></span>
+                            <input type="date" name="dob" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title"><i class="fas fa-calendar-check text-success me-2"></i> Academic Period & Attendance</div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">Semester</label>
+                        <select name="semester" class="form-select" required>
+                            <option value="1st Semester">1st Semester</option>
+                            <option value="2nd Semester">2nd Semester</option>
+                            <option value="3rd Semester">3rd Semester</option>
+                            <option value="4th Semester">4th Semester</option>
+                            <option value="5th Semester">5th Semester</option>
+                            <option value="6th Semester">6th Semester</option>
+                            <option value="7th Semester">7th Semester</option>
+                            <option value="8th Semester">8th Semester</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">Month</label>
+                        <select name="month" class="form-select" required>
+                            <option value="January">January</option>
+                            <option value="February">February</option>
+                            <option value="March">March</option>
+                            <option value="April">April</option>
+                            <option value="May">May</option>
+                            <option value="June">June</option>
+                            <option value="July">July</option>
+                            <option value="August">August</option>
+                            <option value="September">September</option>
+                            <option value="October">October</option>
+                            <option value="November">November</option>
+                            <option value="December">December</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">Attendance (%)</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-percent text-success"></i></span>
+                            <input type="number" name="attendance_percent" class="form-control" placeholder="0-100" min="0" max="100" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title"><i class="fas fa-clipboard-list text-info me-2"></i> Exam Day Status</div>
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-bold">Status for the Exam Day</label>
+                        <select name="exam_status" id="examStatus" class="form-select" onchange="toggleMarks()" required>
+                            <option value="Present" selected>Present</option>
+                            <option value="Absent">Absent</option>
+                            <option value="OD">On Duty (OD)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="marksSection">
+                    <div class="section-title"><i class="fas fa-graduation-cap text-warning me-2"></i> Subjects Marks (Out of 100)</div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Subject 1</label>
+                            <input type="number" name="sub1" class="form-control" placeholder="Marks" min="0" max="100" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Subject 2</label>
+                            <input type="number" name="sub2" class="form-control" placeholder="Marks" min="0" max="100" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Subject 3</label>
+                            <input type="number" name="sub3" class="form-control" placeholder="Marks" min="0" max="100" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold">Subject 4</label>
+                            <input type="number" name="sub4" class="form-control" placeholder="Marks" min="0" max="100" required>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold">Subject 5</label>
+                            <input type="number" name="sub5" class="form-control" placeholder="Marks" min="0" max="100" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save"></i> Save Student Record</button>
+                    <a href="/admin_dashboard" class="btn btn-light"><i class="fas fa-times"></i> Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+    <script>
+        function toggleMarks() {
+            const status = document.getElementById('examStatus').value;
+            const marksSection = document.getElementById('marksSection');
+            const inputs = marksSection.querySelectorAll('input[type="number"]');
+            
+            if(status === 'Present') {
+                marksSection.style.display = 'block';
+                inputs.forEach(input => {
+                    input.required = true;
+                });
+            } else {
+                marksSection.style.display = 'none';
+                inputs.forEach(input => {
+                    input.required = false;
+                    input.value = '0';
+                });
+            }
+        }
+    </script>
+    <script src="/static/js/theme.js"></script>
+</html>

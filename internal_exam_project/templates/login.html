@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <title>Login System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/theme.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to right bottom, rgba(13, 110, 253, 0.2), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070&auto=format&fit=crop') no-repeat center center;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+        .container-box {
+            display: flex;
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            width: 85%;
+            height: 420px;
+            max-width: 900px;
+            position: relative;
+        }
+        .left, .right {
+            width: 50%;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .left {
+            background: rgba(13, 110, 253, 0.8);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+        .right {
+            background: transparent;
+        }
+        input {
+            margin: 10px 0;
+            padding: 10px;
+            width: 80%;
+            border-radius: 8px;
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--input-text);
+        }
+        input::placeholder {
+            color: var(--text-muted);
+        }
+        .login-form {
+            width: 100%;
+        }
+        .login-form label {
+            display: block;
+            width: 80%;
+            margin: 8px auto 0;
+            text-align: left;
+        }
+        .show-password {
+            width: 80%;
+            margin: 0 auto;
+            text-align: left;
+        }
+        .show-password label {
+            display: inline;
+            width: auto;
+            margin: 0;
+        }
+        button[type="submit"] {
+            margin-top: 10px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            background: #28a745;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: var(--font-primary);
+            transition: all var(--transition-speed) ease;
+        }
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+        }
+        .theme-switch-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+{% if error %}
+<div class="alert alert-danger text-center position-absolute w-100" style="top: 0; left: 0; z-index: 1000;">
+    {{ error }}
+</div>
+{% endif %}
+
+<div class="container-box glass-container">
+    <div class="theme-switch-container">
+        <button id="theme-toggle" class="theme-toggle-btn">
+            <i id="theme-icon" class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="left">
+        <h2>👨‍💼 Admin Login</h2>
+        <form class="login-form" method="POST" action="/login">
+            <input type="hidden" name="role" value="admin">
+            <label for="admin-username">Username</label>
+            <input id="admin-username" type="text" name="username" placeholder="Username" autocomplete="username" required>
+            <label for="admin-password">Password</label>
+            <input id="admin-password" type="password" name="password" placeholder="Password" autocomplete="current-password" required>
+            <div class="show-password">
+                <input id="show-admin-password" type="checkbox" style="width: auto; margin: 0 6px 0 0;">
+                <label for="show-admin-password">Show password</label>
+            </div>
+            <button type="submit">Admin Login</button>
+        </form>
+    </div>
+
+    <!-- STUDENT -->
+    <div class="right">
+        <h2>🎓 Student Login</h2>
+        <form class="login-form" method="POST" action="/login">
+            <input type="hidden" name="role" value="student">
+            <label for="student-roll">Student Register No</label>
+            <input id="student-roll" type="text" name="roll" placeholder="Student Register No" autocomplete="username" required>
+            <label for="student-dob">Date of Birth</label>
+            <input id="student-dob" type="date" name="dob" required>
+            <button type="submit">Student Login</button>
+        </form>
+    </div>
+
+</div>
+
+<script src="/static/js/theme.js"></script>
+<script>
+    document.getElementById("show-admin-password").addEventListener("change", function () {
+        document.getElementById("admin-password").type = this.checked ? "text" : "password";
+    });
+</script>
+</body>
+</html>

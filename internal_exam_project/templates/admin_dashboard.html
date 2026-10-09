@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="/static/css/theme.css" rel="stylesheet">
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            padding: 30px;
+        }
+
+        [data-theme="light"] body {
+            /* Vibrant Animated Gradient Background */
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .dashboard-header {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 20px 30px;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dashboard-header h2 {
+            font-weight: 700;
+            color: var(--text-color);
+            letter-spacing: -0.5px;
+        }
+
+        .dashboard-header h2 i {
+            background: -webkit-linear-gradient(45deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 30px 20px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            z-index: 1;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 100%);
+            z-index: -1;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: -webkit-linear-gradient(45deg, #333, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover i {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        .pass-card {
+            border-bottom: 6px solid #00b09b;
+        }
+
+        .pass-card i {
+            background: -webkit-linear-gradient(45deg, #00b09b, #96c93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .fail-card {
+            border-bottom: 6px solid #ff416c;
+        }
+
+        .fail-card i {
+            background: -webkit-linear-gradient(45deg, #ff416c, #ff4b2b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .absent-card {
+            border-bottom: 6px solid #f9d423;
+        }
+
+        .absent-card i {
+            background: -webkit-linear-gradient(45deg, #f83600, #f9d423);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .od-card {
+            border-bottom: 6px solid #4facfe;
+        }
+
+        .od-card i {
+            background: -webkit-linear-gradient(45deg, #00f2fe, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-card h5 {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .stat-card h2 {
+            font-weight: 700;
+            font-size: 2.8rem;
+            color: var(--text-color);
+            margin-top: 10px;
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+            margin-bottom: 30px;
+        }
+
+        .chart-container h4 {
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .chart-container h4 i {
+            background: -webkit-linear-gradient(45deg, #f83600, #f9d423);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .table-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn {
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 8px 18px;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #00b09b, #96c93d);
+            border: none;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #f83600, #f9d423);
+            color: white;
+        }
+
+        .btn-outline-danger {
+            background: white;
+            color: #ff416c;
+            border: 1px solid #ffe0e6;
+        }
+
+        .btn-outline-danger:hover {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            border-color: transparent;
+        }
+
+        /* Customizing the search input */
+        .form-control {
+            border-radius: 10px 0 0 10px;
+            border: 1px solid #e0e0e0;
+            padding: 10px 15px;
+            box-shadow: none;
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #4facfe;
+        }
+
+        .input-group .btn {
+            border-radius: 0 10px 10px 0;
+            border: 1px solid #e0e0e0;
+            border-left: none;
+            background: #f8f9fa;
+        }
+
+        .input-group .btn:hover {
+            background: #e9ecef;
+            transform: none;
+            box-shadow: none;
+            color: #333;
+        }
+
+        /* Custom Scrollbar for Alert Area */
+        .alert-scroll-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .alert-scroll-area::-webkit-scrollbar-thumb {
+            background: #b0bec5;
+            border-radius: 10px;
+        }
+
+        .alert-scroll-area::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Header -->
+        <div class="dashboard-header d-flex flex-wrap gap-3 align-items-center">
+            <h2 class="m-0"><i class="fas fa-chart-line text-primary me-2"></i> Admin Dashboard</h2>
+
+            <button id="theme-toggle" class="theme-toggle-btn ms-2">
+                <i id="theme-icon" class="fas fa-moon"></i>
+            </button>
+            <a href="/manage_notices" class="btn btn-primary ms-2"><i class="fas fa-bullhorn"></i> Announcements</a>
+
+            <form action="/edit_students" method="GET" class="d-flex flex-grow-1" style="max-width: 350px;">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="q" placeholder="Search students...">
+                    <button class="btn border bg-light text-dark" type="submit"><i class="fas fa-search"></i></button>
+                </div>
+            </form>
+
+            <div class="d-flex gap-2">
+                <a href="/view_students" class="btn btn-info text-white" title="View Students"><i
+                        class="fas fa-eye"></i> View</a>
+                <a href="/edit_students" class="btn btn-warning" title="Edit Student"><i class="fas fa-user-edit"></i>
+                    Manage</a>
+                <a href="/add" class="btn btn-primary" title="Add Student"><i class="fas fa-plus"></i> Add</a>
+                <a href="/logout" class="btn btn-outline-danger" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </div>
+
+        <!-- Metric Cards with Icons -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card pass-card">
+                    <i class="fas fa-check-circle"></i>
+                    <h5 class="text-muted">Pass</h5>
+                    <h2 class="fw-bold mb-0">{{pass_count}}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card fail-card">
+                    <i class="fas fa-times-circle"></i>
+                    <h5 class="text-muted">Fail</h5>
+                    <h2 class="fw-bold mb-0">{{fail_count}}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card absent-card">
+                    <i class="fas fa-user-times"></i>
+                    <h5 class="text-muted">Absent</h5>
+                    <h2 class="fw-bold mb-0">{{absent_count}}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card od-card">
+                    <i class="fas fa-briefcase"></i>
+                    <h5 class="text-muted">On Duty (OD)</h5>
+                    <h2 class="fw-bold mb-0">{{od_count}}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Notifications Removed -->
+
+        <!-- Charts Section -->
+        <div id="chartDataVars" style="display: none;" data-pass="{{pass_count}}" data-fail="{{fail_count}}"
+            data-absent="{{absent_count}}" data-od="{{od_count}}" data-sub1="{{sub1_avg}}" data-sub2="{{sub2_avg}}"
+            data-sub3="{{sub3_avg}}" data-sub4="{{sub4_avg}}" data-sub5="{{sub5_avg}}">
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="chart-container h-100 mb-0">
+                    <h4 class="mb-4"><i class="fas fa-chart-bar text-secondary me-2"></i> Results Bar Chart</h4>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container h-100 mb-0">
+                    <h4 class="mb-4"><i class="fas fa-chart-pie text-secondary me-2"></i> Results Distribution</h4>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-12">
+                <div class="chart-container mb-0">
+                    <h4 class="mb-4"><i class="fas fa-chart-line text-secondary me-2"></i> Subject Performance (Average
+                        Marks)</h4>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const chartDataVars = document.getElementById('chartDataVars');
+        const passCount = parseInt(chartDataVars.getAttribute('data-pass'), 10) || 0;
+        const failCount = parseInt(chartDataVars.getAttribute('data-fail'), 10) || 0;
+        const absentCount = parseInt(chartDataVars.getAttribute('data-absent'), 10) || 0;
+        const odCount = parseInt(chartDataVars.getAttribute('data-od'), 10) || 0;
+
+        const sub1Avg = parseFloat(chartDataVars.getAttribute('data-sub1')) || 0;
+        const sub2Avg = parseFloat(chartDataVars.getAttribute('data-sub2')) || 0;
+        const sub3Avg = parseFloat(chartDataVars.getAttribute('data-sub3')) || 0;
+        const sub4Avg = parseFloat(chartDataVars.getAttribute('data-sub4')) || 0;
+        const sub5Avg = parseFloat(chartDataVars.getAttribute('data-sub5')) || 0;
+
+        // Bar Chart
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Pass', 'Fail', 'Absent', 'OD (On Duty)'],
+                datasets: [{
+                    label: 'Number of Students',
+                    data: [passCount, failCount, absentCount, odCount],
+                    backgroundColor: [
+                        'rgba(0, 176, 155, 0.8)',
+                        'rgba(255, 65, 108, 0.8)',
+                        'rgba(249, 212, 35, 0.8)',
+                        'rgba(79, 172, 254, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(0, 176, 155, 1)',
+                        'rgba(255, 65, 108, 1)',
+                        'rgba(249, 212, 35, 1)',
+                        'rgba(79, 172, 254, 1)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1, font: { family: 'Outfit' } },
+                        grid: { borderDash: [5, 5] }
+                    },
+                    x: {
+                        ticks: { font: { family: 'Outfit', weight: 'bold' } },
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Pie Chart
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pass', 'Fail', 'Absent', 'OD'],
+                datasets: [{
+                    data: [passCount, failCount, absentCount, odCount],
+                    backgroundColor: [
+                        'rgba(0, 176, 155, 0.8)',
+                        'rgba(255, 65, 108, 0.8)',
+                        'rgba(249, 212, 35, 0.8)',
+                        'rgba(79, 172, 254, 0.8)'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right', labels: { font: { family: 'Outfit', size: 14 } } }
+                }
+            }
+        });
+
+        // Line Chart for Average Marks
+        const lineCtx = document.getElementById('lineChart').getContext('2d');
+        new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: ['Subject 1', 'Subject 2', 'Subject 3', 'Subject 4', 'Subject 5'],
+                datasets: [{
+                    label: 'Average Marks',
+                    data: [sub1Avg, sub2Avg, sub3Avg, sub4Avg, sub5Avg],
+                    backgroundColor: 'rgba(79, 172, 254, 0.2)',
+                    borderColor: 'rgba(79, 172, 254, 1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: 'rgba(0, 176, 155, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { font: { family: 'Outfit' } },
+                        grid: { borderDash: [5, 5] }
+                    },
+                    x: {
+                        ticks: { font: { family: 'Outfit', weight: 'bold' } },
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        titleFont: { family: 'Outfit', size: 14 },
+                        bodyFont: { family: 'Outfit', size: 14 }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <script src="/static/js/theme.js"></script>
+</body>
+
+</html>

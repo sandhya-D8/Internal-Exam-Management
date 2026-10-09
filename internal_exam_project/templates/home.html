@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .sidebar { min-height: 100vh; background-color: #343a40; padding-top: 20px; color: white;}
+        .sidebar h4 { color: #fff; text-align: center; margin-bottom: 30px; }
+        .sidebar a { color: #adb5bd; text-decoration: none; display: block; padding: 10px 20px; font-weight: 500; }
+        .sidebar a:hover, .sidebar a.active { color: white; background-color: #495057; border-left: 4px solid #0d6efd;}
+        .stat-card { border-radius: 12px; padding: 25px; color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s;}
+        .stat-card:hover { transform: translateY(-5px); }
+        .bg-total { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); }
+        .bg-pass { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .bg-fail { background: linear-gradient(135deg, #ed213a 0%, #93291e 100%); }
+        .bg-absent { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
+        .card-panel { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .table-hover tbody tr:hover { background-color: #f1f3f5; }
+    </style>
+</head>
+<body>
+
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar" style="width: 250px; flex-shrink: 0;">
+        <h4>📊 Exam Admin</h4>
+        <a href="/home" class="active">🏠 Dashboard</a>
+        <a href="/add">➕ Add Student</a>
+        <a href="/logout" class="mt-5 text-danger">🚪 Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-grow-1 p-5 overflow-auto" style="height: 100vh;">
+        <h2 class="mb-4 font-weight-bold">Dashboard Overview</h2>
+
+        <div class="row g-4 mb-5" id="chartDataVars" data-pass="{{pass_count}}" data-fail="{{fail_count}}" data-absent="{{absent_count}}">
+            <div class="col-md-3">
+                <div class="stat-card bg-total text-center">
+                    <h5 class="text-white-50">Total Students</h5>
+                    <h1 class="display-4 fw-bold">{{total}}</h1>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card bg-pass text-center">
+                    <h5 class="text-white-50">Passed</h5>
+                    <h1 class="display-4 fw-bold">{{pass_count}}</h1>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card bg-fail text-center">
+                    <h5 class="text-white-50">Failed</h5>
+                    <h1 class="display-4 fw-bold">{{fail_count}}</h1>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card bg-absent text-center">
+                    <h5 class="text-white-50">Absent</h5>
+                    <h1 class="display-4 fw-bold">{{absent_count}}</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Chart Column -->
+            <div class="col-md-5">
+                <div class="card-panel h-100 d-flex flex-column align-items-center justify-content-center">
+                    <h5 class="mb-4 text-secondary">Results Distribution</h5>
+                    <div style="width: 80%; max-width: 300px;">
+                        <canvas id="resultsPieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Column -->
+            <div class="col-md-7">
+                <div class="card-panel h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="text-secondary m-0">Recent Student Records</h5>
+                        <a href="/add" class="btn btn-sm btn-primary">+ Add New</a>
+                    </div>
+                    <div class="table-responsive" style="max-height: 400px;">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>Roll</th>
+                                    <th>Name</th>
+                                    <th>Marks</th>
+                                    <th>Attendance</th>
+                                    <th>Result</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for s in data %}
+                                <tr>
+                                    <td>{{s[0]}}</td>
+                                    <td>{{s[1]}}</td>
+                                    <td>{{s[2]}}</td>
+                                    <td>
+                                        {% if s[3] == 'Present' %}
+                                            <span class="badge bg-success">Present</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark">Absent</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if s[4] == 'Pass' %}
+                                            <span class="badge bg-success">Pass</span>
+                                        {% elif s[4] == 'Fail' %}
+                                            <span class="badge bg-danger">Fail</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Absent</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="/edit/{{s[0]}}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                        <a href="/delete/{{s[0]}}" class="btn btn-sm btn-outline-danger">Del</a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">No student records found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const chartDataVars = document.getElementById('chartDataVars');
+        const pass = parseInt(chartDataVars.getAttribute('data-pass'), 10) || 0;
+        const fail = parseInt(chartDataVars.getAttribute('data-fail'), 10) || 0;
+        const absent = parseInt(chartDataVars.getAttribute('data-absent'), 10) || 0;
+
+        const ctx = document.getElementById('resultsPieChart').getContext('2d');
+        
+        // Only render chart if there is data
+        if(pass === 0 && fail === 0 && absent === 0) {
+            document.getElementById('resultsPieChart').style.display = 'none';
+            const noDataMsg = document.createElement('p');
+            noDataMsg.className = 'text-muted mt-3 text-center';
+            noDataMsg.innerText = 'No data to display chart.';
+            ctx.canvas.parentNode.appendChild(noDataMsg);
+            return;
+        }
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pass', 'Fail', 'Absent'],
+                datasets: [{
+                    data: [pass, fail, absent],
+                    backgroundColor: [
+                        '#38ef7d', // Pass (Greenish)
+                        '#ed213a', // Fail (Red)
+                        '#ffd200'  // Absent (Yellow/Orange)
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: { size: 14 }
+                        }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
